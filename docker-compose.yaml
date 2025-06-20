@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: library-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: librarydb
+      MYSQL_USER: libraryuser
+      MYSQL_PASSWORD: librarypass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  spring-app:
+    build: .
+    container_name: library-registration-backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APPLICATION_NAME: library-registration-backend
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/librarydb?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: libraryuser
+      SPRING_DATASOURCE_PASSWORD: librarypass
+      SPRING_DATASOURCE_DRIVER: com.mysql.cj.jdbc.Driver
+      HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: true
+      JWT_SECRET: anptestaaaaaaaaaaaaaaaaaaaaaaaaaaaasggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+      JWT_EXPIRATION: 900000
+    ports:
+      - "8080:8080"
+    restart: on-failure
+
+volumes:
+  mysql_data:

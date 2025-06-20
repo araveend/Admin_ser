@@ -13,9 +13,7 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-/**
- * @author Samson Effes
- */
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
